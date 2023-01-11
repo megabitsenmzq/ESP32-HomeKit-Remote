@@ -4,7 +4,7 @@ This allows you to use the Home app on iOS to control your Panasonic air conditi
 
 ## Hardware
 
-I'm using an ESP32 board made by M5Stack called [M5Atom Lite](https://shop.m5stack.com/products/atom-lite-esp32-development-kit). Which is cheap and small. You can use other boards, but the code needs to be modified.
+I'm using an ESP32 board made by M5Stack called [M5Atom Lite](https://shop.m5stack.com/products/atom-lite-esp32-development-kit). Which is cheap and small. You can use other boards, and the code is very easy to modify.
 
 <img src="https://cdn.shopify.com/s/files/1/0056/7689/2250/products/1_2_c215b5d9-d41a-4ab8-ad54-b2531930f075_1200x1200.jpg?v=1655692122" alt="M5Atom Lite" width="350" height="350">
 
@@ -12,11 +12,13 @@ A sensor module from M5Stack called [ENV III](https://shop.m5stack.com/collectio
 
 <img src="https://cdn.shopify.com/s/files/1/0056/7689/2250/products/1_c0de294c-761b-45d0-9098-fe75effe7f49_1200x1200.jpg?v=1627863922" alt="ENV III" width="350" height="350">
 
-An infrared LED on pin 25. M5Atom has an included LED but is very dim. So I added an external one.
+An infrared LED on pin 25. M5Atom has an included IR LED but is very dim. So I added an external one.
+
+Make sure you have the "IGMP Proxy" feature enabled on your router. HomeSpan needs it to work properly. Otherwise you might experence not responding problem frequently.
 
 ## Dependencies
 
-- [M5Atom](https://github.com/m5stack/M5Atom): To control the board and sensor modual.
+- [M5Atom](https://github.com/m5stack/M5Atom): To control the board and sensor modual. Optional if you have other libs that can control SHT3X.
 - [HomeSpan](https://github.com/HomeSpan/HomeSpan): Used for HomeKit integration.
 - [IRremoteESP8266](https://github.com/crankyoldgit/IRremoteESP8266): To control the air conditioner.
 
