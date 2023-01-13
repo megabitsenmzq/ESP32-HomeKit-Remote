@@ -25,7 +25,10 @@ struct PANASONIC_REMOTE : Service::Thermostat {
   SpanCharacteristic *targetTemp;
   SpanCharacteristic *unit;
 
-  int previousState = 0;
+  // Extra characteristic for automation.
+  SpanCharacteristic *currentTemp2;
+
+  int previousACState = 0;
 
   PANASONIC_REMOTE()
     : Service::Thermostat() {
@@ -60,12 +63,18 @@ struct PANASONIC_REMOTE : Service::Thermostat {
       savedTemp = 22;
     }
 
+    new Characteristic::Name("Panasonic Remote");
     currentState = new Characteristic::CurrentHeatingCoolingState(savedState);
     targetState = new Characteristic::TargetHeatingCoolingState(savedState);
     currentTemp = new Characteristic::CurrentTemperature(temperature);
     currentHumidity = new Characteristic::CurrentRelativeHumidity(humidity);
     targetTemp = (new Characteristic::TargetTemperature(savedTemp))->setRange(16, 30, 0.5);
     unit = new Characteristic::TemperatureDisplayUnits(0);
+
+    // Extra temperature sensor for automation.
+    new Service::TemperatureSensor();
+    new Characteristic::Name("Sensor for Automation");
+    currentTemp2 = new Characteristic::CurrentTemperature(temperature);
   }
 
   void printState() {
@@ -86,15 +95,17 @@ struct PANASONIC_REMOTE : Service::Thermostat {
     float humidity = sht30.humidity;
     currentTemp->setVal(temperature);
     currentHumidity->setVal(humidity);
+
+    currentTemp2->setVal(temperature);
   }
 
   void toggleAC() {
     int state = currentState->getNewVal();
     if (state != 0) {
-      previousState = state;
+      previousACState = state;
       targetState->setVal(0);
     } else {
-      targetState->setVal(previousState);
+      targetState->setVal(previousACState);
     }
     update();
   }
@@ -114,7 +125,7 @@ struct PANASONIC_REMOTE : Service::Thermostat {
       ac.off();
     } else {
       ac.on();
-      previousState = state;
+      previousACState = state;
     }
 
     switch (state) {
