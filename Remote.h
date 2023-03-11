@@ -64,7 +64,7 @@ struct PANASONIC_REMOTE : Service::Thermostat {
     }
 
     new Characteristic::Name("Panasonic Remote");
-    currentState = new Characteristic::CurrentHeatingCoolingState(savedState);
+    currentState = new Characteristic::CurrentHeatingCoolingState(0);
     targetState = new Characteristic::TargetHeatingCoolingState(savedState);
     currentTemp = new Characteristic::CurrentTemperature(temperature);
     currentHumidity = new Characteristic::CurrentRelativeHumidity(humidity);
@@ -100,7 +100,7 @@ struct PANASONIC_REMOTE : Service::Thermostat {
   }
 
   void toggleAC() {
-    int state = currentState->getNewVal();
+    int state = targetState->getNewVal();
     if (state != 0) {
       previousACState = state;
       targetState->setVal(0);
@@ -133,11 +133,15 @@ struct PANASONIC_REMOTE : Service::Thermostat {
         break;
       case 1:
         ac.setMode(kPanasonicAcHeat);
+        currentState->setVal(state);
         break;
       case 2:
         ac.setMode(kPanasonicAcCool);
+        currentState->setVal(state);
         break;
       default:
+        // Setting the current state to auto cause the device to stop responding.
+        // So don't change currentState here.
         ac.setMode(kPanasonicAcAuto);
         break;
     }
@@ -148,7 +152,6 @@ struct PANASONIC_REMOTE : Service::Thermostat {
     ac.setTemp(temp);
     ac.send();
     printState();
-    currentState->setVal(state);
     return (true);
   }
 };
