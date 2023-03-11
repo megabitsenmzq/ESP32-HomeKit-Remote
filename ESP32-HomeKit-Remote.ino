@@ -1,4 +1,4 @@
-#include "Remote.h"
+#include "AC.h"
 #include "Wire.h"
 
 #define BUTTON_PIN 39

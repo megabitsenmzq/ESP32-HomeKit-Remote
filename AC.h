@@ -16,7 +16,7 @@ SHT3X sht30;
 EEPROMClass ACState("acState");
 EEPROMClass ACTemp("acTemp");
 
-struct PANASONIC_REMOTE : Service::Thermostat {
+struct PANASONIC_REMOTE: Service::Thermostat {
 
   SpanCharacteristic *currentState;
   SpanCharacteristic *targetState;
