@@ -140,9 +140,9 @@ struct PANASONIC_REMOTE: Service::Thermostat {
         currentState->setVal(state);
         break;
       default:
-        // Setting the current state to auto cause the device to stop responding.
-        // So don't change currentState here.
         ac.setMode(kPanasonicAcAuto);
+        // Setting the current state to auto cause the device to stop responding.
+        currentState->setVal(0);
         break;
     }
 
