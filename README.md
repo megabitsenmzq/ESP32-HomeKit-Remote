@@ -14,7 +14,7 @@ A sensor module from M5Stack called [ENV III](https://shop.m5stack.com/collectio
 
 An infrared LED on pin 25. M5Atom has an included IR LED but is very dim. So I added an external one.
 
-Make sure you have the "IGMP Proxy" feature enabled on your router. HomeSpan needs it to work properly. Otherwise you might experence not responding problem frequently.
+Make sure you have the "IGMP Proxy" feature enabled on your router. HomeSpan needs it to work properly. Otherwise you might experience not responding problem frequently.
 
 ## Dependencies
 
