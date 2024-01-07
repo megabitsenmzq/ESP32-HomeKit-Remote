@@ -3,7 +3,7 @@
 #include <IRsend.h>
 #include <ir_Panasonic.h>
 
-#include "SHT3X.h"
+#include "SHTSensor.h"
 #include "EEPROM.h"
 
 // Remote
@@ -11,7 +11,7 @@ const uint16_t kIrLed = 25;
 IRPanasonicAc ac(kIrLed);
 
 // Senser
-SHT3X sht30;
+SHTSensor sht;
 
 EEPROMClass ACState("acState");
 EEPROMClass ACTemp("acTemp");
@@ -33,9 +33,9 @@ struct PANASONIC_REMOTE: Service::Thermostat {
   PANASONIC_REMOTE()
     : Service::Thermostat() {
 
-    sht30.get();
-    float temperature = sht30.cTemp;
-    float humidity = sht30.humidity;
+    sht.init();
+    float temperature = sht.getTemperature();
+    float humidity = sht.getHumidity();
 
     // Read from EEPROM
     int savedState = 0;
@@ -90,9 +90,8 @@ struct PANASONIC_REMOTE: Service::Thermostat {
   }
 
   void updateSensor() {
-    sht30.get();
-    float temperature = sht30.cTemp;
-    float humidity = sht30.humidity;
+    float temperature = sht.getTemperature();
+    float humidity = sht.getHumidity();
     currentTemp->setVal(temperature);
     currentHumidity->setVal(humidity);
 
