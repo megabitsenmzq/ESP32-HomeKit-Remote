@@ -14,9 +14,11 @@ IRPanasonicAc ac(kIrLed);
 SHTSensor sht;
 
 EEPROMClass ACState("acState");
+EEPROMClass IRACSwitch("IRACSwitch");
+EEPROMClass IRACState("IRACState");
 EEPROMClass ACTemp("acTemp");
 
-struct PANASONIC_REMOTE: Service::Thermostat {
+struct AC_Service: Service::Thermostat {
 
   SpanCharacteristic *currentState;
   SpanCharacteristic *targetState;
@@ -30,7 +32,7 @@ struct PANASONIC_REMOTE: Service::Thermostat {
 
   int previousACState = 0;
 
-  PANASONIC_REMOTE()
+  AC_Service()
     : Service::Thermostat() {
 
     sht.init();
@@ -44,6 +46,16 @@ struct PANASONIC_REMOTE: Service::Thermostat {
     // EEPROM Initialization.
     if (!ACState.begin(0x4)) {
       Serial.println("Failed to initialise ACState");
+      delay(1000);
+      ESP.restart();
+    }
+    if (!IRACSwitch.begin(0x4)) {
+      Serial.println("Failed to initialise IRACSwitch");
+      delay(1000);
+      ESP.restart();
+    }
+    if (!IRACState.begin(0x4)) {
+      Serial.println("Failed to initialise IRACState");
       delay(1000);
       ESP.restart();
     }
@@ -121,8 +133,10 @@ struct PANASONIC_REMOTE: Service::Thermostat {
     ACTemp.commit();
     
     if (state == 0) {
+      IRACSwitch.put(0, 0);
       ac.off();
     } else {
+      IRACSwitch.put(0, 1);
       ac.on();
       previousACState = state;
     }
@@ -131,19 +145,22 @@ struct PANASONIC_REMOTE: Service::Thermostat {
       case 0:
         break;
       case 1:
-        ac.setMode(kPanasonicAcHeat);
+        state = kPanasonicAcHeat;
         currentState->setVal(state);
         break;
       case 2:
-        ac.setMode(kPanasonicAcCool);
+        state = kPanasonicAcCool;
         currentState->setVal(state);
         break;
       default:
-        ac.setMode(kPanasonicAcAuto);
+        state = kPanasonicAcAuto;
         // Setting the current state to auto cause the device to stop responding.
         currentState->setVal(0);
         break;
     }
+
+    ac.setMode(state);
+    IRACState.put(0, state);
 
     ac.setFan(kPanasonicAcFanAuto);
     ac.setSwingVertical(kPanasonicAcSwingVAuto);

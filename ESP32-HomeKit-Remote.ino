@@ -4,7 +4,7 @@
 #define BUTTON_PIN 39
 #define DEBOUNCE_TIME 50
 
-PANASONIC_REMOTE *remote;
+AC_Service *acService;
 
 // Timer
 unsigned long previousSensorMillis = 0;
@@ -33,7 +33,7 @@ void setup() {
   new SpanAccessory();
   new Service::AccessoryInformation();
   new Characteristic::Identify();
-  remote = new PANASONIC_REMOTE();
+  acService = new AC_Service();
 
   // Button
   pinMode(BUTTON_PIN, INPUT);
@@ -43,7 +43,7 @@ void loop() {
   // Update the sensor value every 10 seconds.
   if (millis() - previousSensorMillis > sensorInterval) {
     previousSensorMillis = millis();
-    remote->updateSensor();
+    acService->updateSensor();
   }
 
   // Button with debounce.
@@ -54,7 +54,7 @@ void loop() {
   }
   if ((millis() - lastDebounceTime) > DEBOUNCE_TIME && lastDebounceTime != 0) {
     if(lastSteadyState == LOW && currentState == HIGH) {
-      remote->toggleAC();
+      acService->toggleAC();
     }
     lastSteadyState = currentState;
   }
